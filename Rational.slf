@@ -254,6 +254,7 @@ lemma abs-deterministic:
   end case analysis
   end case
   end case analysis
+
 end lemma
 
 
@@ -293,23 +294,21 @@ end lemma
   
 judgment rep: n / n = q
 
------ rep-eq
+-------------- rep-eq
 s n / s n = q
 
 
 s n1 + s n2 = n3
 n3 / s n2 = q1 
 inc q1 = q
------ rep-gt
+---------------- rep-gt
 s n1 / s n2 = q
   
 
 s n + s m = n1
 n1 / n3 = q
------ rep-lt
+-------------------------- rep-lt
 s m / s n = 0 + inv succ q 
-
-
 
 
 lemma rep-implies-positive:
