@@ -24,22 +24,22 @@ judgment gt = Nat.gt : n1 > n2
   
 judgment equ: q = q
 
------ eq
+--- eq
 q = q
 
 judgment inc: inc q = q
 
 
------ inc-whole
+----------- inc-whole
 inc succ n = succ s n
 
------ inc-frac
+-------------------------- inc-frac
 inc n + inv succ q = n + inv succ q
 
 
 judgment abs: q = n / n
 
------ abs-whole
+--------- abs-whole
 succ n = s n / s 0
 
 
@@ -47,7 +47,7 @@ q = m / n
 m + n = n1
 n4 * n1 = n2
 n2 + n = n3
-------------------------------- abs-frac
+----------------- abs-frac
 n4 + inv succ q = n3 / n1
 
 
@@ -66,6 +66,19 @@ q1 > q2
 
 
 judgment add: q + q = q
+
+
+
+/*
+ * add/ : add Q1 Q2 Q3
+    <- abs Q1 M1 N1
+    <- abs Q2 M2 N2
+    <- times M1 N2 P12
+    <- times M2 N1 P21
+    <- times N1 N2 N12
+    <- plus P12 P21 P12+P21
+    <- rep P12+P21 N12 Q3.
+*/
 
 q1 = m1 / n1
 q2 = m2 / n2
@@ -156,7 +169,7 @@ lemma frac-preserves-eq:
   end lemma
 
 
-lemma inc-deterministic:
+lemma inc-unique:
     forall d1: inc q1 = q2
     forall d2: inc q1 = q4
     exists q2 = q4
@@ -206,19 +219,19 @@ lemma abs-respects-eq:
 end lemma
 
 
-lemma abs-deterministic:
+lemma abs-unique:
   forall d1: q1 = m1 / n1
   forall d2: q1 = m2 / n2
   exists m1 = m2 and n1 = n2
-  proof by case analysis on d1:
+  proof by induction on d1:
     case rule
-      --------- abs-whole
+      -------------- abs-whole
       _:succ n = (s n) / (s 0)
       where m1 := s n and n1 := s 0 and q1 := succ n
     is
       proof by case analysis on d2:
         case rule
-          --------- abs-whole
+          -------------- abs-whole
           _:succ n = (s n) / (s 0)
           where m2 := s n and n2 := s 0
         is 
@@ -229,32 +242,39 @@ lemma abs-deterministic:
       end case analysis
     end case
     case rule
-        _: q = m / n
-        _: m + n = n1'
-        _: n4 * n1' = n2'
-        _: n2' + n = n3
-        ----------- abs-frac
+        d1': q = m / n
+        d2': m + n = n1'
+        d3': n4 * n1' = n2'
+        d4': n2' + n = n3
+        -------------------- abs-frac
         _: n4 + inv succ q = n3 / n1'
         where q1 := n4 + inv succ q and m1 := n3 and n1 := n1'
     is
       proof by case analysis on d2:
         case rule
-            _: q = m' / n'
-            _: m' + n' = n1'
-            _: n4 * n1' = n2''
-            _: n2'' + n' = n3
-            ----------- abs-frac
-            _: n4 + inv succ q = n3 / n1'
-            where m2 := n3 and n2 := n1'
+            d1'': q = m' / n'
+            d2'': m' + n' = n1''
+            d3'': n4 * n1'' = n2''
+            d4'': n2'' + n' = n3'
+            ---------------------- abs-frac
+            _: n4 + inv succ q = n3' / n1''
+            where m2 := n3' and n2 := n1''
         is
-            d4: m1 = m2 by rule Nat.eq
-            d5: n1 = n2 by rule Nat.eq
-            proof by d4, d5
+          d6: m = m' and 
+          d7: n = n' by induction hypothesis on d1', d1''
+          use inversion of Nat.eq on d6 where m := m'
+          use inversion of Nat.eq on d7 where n := n'
+          d8: n1' = n1'' by theorem Nat.plus-unique on d2', d2''
+          use inversion of Nat.eq on d8 where n1' := n1''          
+          d9: n2' = n2'' by theorem Nat.times-unique on d3', d3''
+          use inversion of Nat.eq on d9 where n2' := n2''          
+          d10: n3 = n3' by theorem Nat.plus-unique on d4', d4''
+          use inversion of Nat.eq on d10 where n3 := n3'
+          proof by d10, d8
     end case
   end case analysis
   end case
-  end case analysis
-
+  end induction
 end lemma
 
 
@@ -287,28 +307,30 @@ lemma abs-yields-positive:
   forall d1: q = m / n
   exists m = s m1 and n = s n1
   d2: q = s m1 / s n2 by lemma abs-total on q
-  proof by lemma abs-deterministic on d1, d2
+  proof by lemma abs-unique on d1, d2
 end lemma
   
   
   
 judgment rep: n / n = q
 
--------------- rep-eq
+----- rep-eq
 s n / s n = q
 
 
 s n1 + s n2 = n3
 n3 / s n2 = q1 
 inc q1 = q
----------------- rep-gt
+----- rep-gt
 s n1 / s n2 = q
   
 
 s n + s m = n1
 n1 / n3 = q
--------------------------- rep-lt
+----- rep-lt
 s m / s n = 0 + inv succ q 
+
+
 
 
 lemma rep-implies-positive:
@@ -328,7 +350,7 @@ lemma rep-implies-positive:
             d': s n1' + s n2' = n3
             d1': n3 / s n2' = q1'
             d2': inc q1' = q1
-            ---------- rep-gt
+            -------------- rep-gt
             _: s n1' / s n2' = q1
             where m1 := s n1' and n1 := s n2'
         is
@@ -339,7 +361,7 @@ lemma rep-implies-positive:
     case rule
         d3': s n + s m' = n1'
         d4': n1' / n3' = q1'
-        ------------- rep-lt
+        -------------------------- rep-lt
          _: s m' / s n = 0 + inv succ q1'
          where m1 := s m' and n1 := s n and q1 := 0 + inv succ q1'
      is
@@ -349,4 +371,33 @@ lemma rep-implies-positive:
     end case
     end case analysis    
 end lemma
+
+
+lemma rep-inf-contradiction:
+    forall d1: m / 0 = q
+    exists contradiction
+    proof by induction on d1:
+    end induction
+end lemma
+
+
+lemma rep-unique:
+  forall d1: m / n = q1
+  forall d2: m / n = q2
+  exists q1 = q2
+  proof by case analysis on d1:
+    case rule
+        ----- rep-eq
+        _:s n' / s n' = q1
+        where m := s n' and n := s n'
+      is
+        proof by rule eq
+   end case
+ end case analysis
+end lemma
+ 
+  
+
+
+
 
