@@ -10,6 +10,7 @@ syntax
       |  n + inv succ q
       
     1 := s 0
+    1 := succ 0
      
       
        
@@ -85,7 +86,7 @@ q2 = m2 / n2
 m1 * n2 = p12
 m2 * n1 = p21
 n1 * n2 = n12
-p12 + p21 = p
+p12 + p21 = p12
 p / n12 = q3
 -------------- add
 q1 + q2 = q3
@@ -315,7 +316,7 @@ end lemma
 judgment rep: n / n = q
 
 ----- rep-eq
-s n / s n = q
+s n / s n = 1
 
 
 s n1 + s n2 = n3
@@ -326,11 +327,14 @@ s n1 / s n2 = q
   
 
 s n + s m = n1
-n1 / n3 = q
+n1 / s m = q
 ----- rep-lt
 s m / s n = 0 + inv succ q 
 
-
+/*1 + 2 = 3
+2 + 3 = 5
+5/3 = 1 2/3
+3/2 = 1 / (2/3)*/
 
 
 lemma rep-implies-positive:
@@ -339,8 +343,8 @@ lemma rep-implies-positive:
     proof by case analysis on d1:
         case rule
             ------------- rep-eq
-            _: s m2 / s m2 = q1
-            where n1 := s m2 and m1 := s m2
+            _: s m2 / s m2 = 1
+            where n1 := s m2 and m1 := s m2 and q1 := 1
         is
             d3: m1 = s m2 by rule Nat.eq
             d4: n1 = s m2 by rule Nat.eq
@@ -360,7 +364,7 @@ lemma rep-implies-positive:
     end case
     case rule
         d3': s n + s m' = n1'
-        d4': n1' / n3' = q1'
+        d4': n1' / s m'= q1'
         -------------------------- rep-lt
          _: s m' / s n = 0 + inv succ q1'
          where m1 := s m' and n1 := s n and q1 := 0 + inv succ q1'
@@ -381,20 +385,82 @@ lemma rep-inf-contradiction:
 end lemma
 
 
+lemma rep-zero-contradiction:
+    forall d1: 0 / n = q
+    exists contradiction
+    proof by induction on d1:
+    end induction
+end lemma
+
+
 lemma rep-unique:
   forall d1: m / n = q1
   forall d2: m / n = q2
   exists q1 = q2
-  proof by case analysis on d1:
+  proof by induction on d1:
     case rule
         ----- rep-eq
-        _:s n' / s n' = q1
-        where m := s n' and n := s n'
+        _:s n' / s n' = 1
+        where m := s n' and n := s n' and q1 := 1
       is
-        proof by rule eq
+        proof by case analysis on d2:
+          case rule
+	          ----- rep-eq
+	        _:s n' / s  n' = 1
+	        where q2 := 1
+	        is
+	           d6: q1 = q2 by rule eq
+	           proof by d6 
+	      end case
+	      case rule
+	        d': s n1' + s n2' = n3
+            d1': n3 / s n2' = q1'
+            d2': inc q1' = q2
+            -------------- rep-gt
+            _:  s n1' / s n2' = q
+           where q2 := q and n' := n2'
+          is
+            d8: q1 =  q2 by rule eq
+            proof by d8
+          end case
+	   end case analysis
    end case
+   case rule
+	    d': s n1' + s n2' = n3
+	    d1': n3 / s n2' = q1'
+	    d2': inc q1' = q1
+	    -------------- rep-gt
+	    _: s n1' / s n2' = q1
+	    where m := s n1' and n := s n2'
+	    is
+	       d6: q1 = q2 by rule eq
+    end case
+    case rule
+        d3': s n' + s m' = n1'
+        d4': n1' / s m' = q1'
+        -------------------------- rep-lt
+         d1'': s m' / s n' = 0 + inv succ q1'
+         where m := s m' and n := s n' and q1 := 0 + inv succ q1'
+       is
+         proof by case analysis on d2:
+           case rule
+                     _: s n' + s m' = n1''
+                    _: n1'' / s m' = q1''
+                    -------------------------- rep-lt
+                    d2'': s m' / s n' = 0 + inv succ q1''
+                    where q2 := 0 + inv succ q1''
+                  is
+                    d111: s m' / s n' = q1 by d1''
+                    d112: s m' / s n' = q2 by d2''
+                    d11: q1'' = q1' by rule eq
+                    proof by d11
+            end case  
  end case analysis
+ end case
+ end induction
 end lemma
+
+
  
   
 
