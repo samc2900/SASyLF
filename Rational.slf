@@ -400,7 +400,7 @@ lemma rep-unique:
   proof by induction on d1:
     case rule
         ----- rep-eq
-        _:s n' / s n' = 1
+        d3':s n' / s n' = 1
         where m := s n' and n := s n' and q1 := 1
       is
         proof by case analysis on d2:
@@ -413,27 +413,50 @@ lemma rep-unique:
 	           proof by d6 
 	      end case
 	      case rule
-	        d': s n1' + s n2' = n3
-            d1': n3 / s n2' = q1'
+	        d': s n' + s n' = n3
+            d1': n3 / s n' = q1'
             d2': inc q1' = q2
             -------------- rep-gt
-            _:  s n1' / s n2' = q
-           where q2 := q and n' := n2'
+            d3'':  s n' / s n' = q2
           is
-            d8: q1 =  q2 by rule eq
-            proof by d8
+            e1: q2 = 1  by rule eq
+            proof by unproved
           end case
+          case rule
+            _:s n' + s n' = n1
+            _:n1 / s n' = q
+            ----- rep-lt
+            _:s n' / s n' = 0 + inv succ q
+           where q2 := 0 + inv succ q
+          is
+            d9: q1 = q2 by rule eq
+         end case
 	   end case analysis
    end case
    case rule
 	    d': s n1' + s n2' = n3
 	    d1': n3 / s n2' = q1'
-	    d2': inc q1' = q1
+	    d2': inc q1' = q1''
 	    -------------- rep-gt
-	    _: s n1' / s n2' = q1
-	    where m := s n1' and n := s n2'
+	    _: s n1' / s n2' = q1''
+	    where m := s n1' and n := s n2' and q1 := q1''
 	    is
-	       d6: q1 = q2 by rule eq
+	       proof by case analysis on d2:
+	         case rule
+                d'': s n1' + s n2' = n3'
+                d1'': n3' / s n2' = q2'
+                d2'': inc q2' = q2''
+                -------------- rep-gt
+                _:  s n1' / s n2' = q2'' 
+                where q2 := q2''
+              is
+                e1: n3 = n3' by theorem Nat.plus-unique on d', d''
+                use inversion of Nat.eq on e1 where n3 := n3'
+                e2: q1' = q2' by induction hypothesis on d1', d1''
+                use inversion of eq on e2 where q1' := q2'
+                proof by lemma inc-unique on d2', d2''
+              end case
+            end case analysis
     end case
     case rule
         d3': s n' + s m' = n1'
@@ -444,16 +467,19 @@ lemma rep-unique:
        is
          proof by case analysis on d2:
            case rule
-                     _: s n' + s m' = n1''
-                    _: n1'' / s m' = q1''
+                    d3'': s n' + s m' = n1''
+                    d4'': n1'' / s m' = q1''
                     -------------------------- rep-lt
                     d2'': s m' / s n' = 0 + inv succ q1''
                     where q2 := 0 + inv succ q1''
                   is
-                    d111: s m' / s n' = q1 by d1''
-                    d112: s m' / s n' = q2 by d2''
-                    d11: q1'' = q1' by rule eq
-                    proof by d11
+                    e1: n1' = n1'' by theorem Nat.plus-unique on d3', d3''
+                use inversion of Nat.eq on e1 where n1' := n1''
+                e2: q1' = q1'' by induction hypothesis on d4', d4''
+                use inversion of eq on e2 where q1' := q1''
+                a1: s m' / s n' = q2 by d2''
+                a2: s m' / s n' = q1 by d1''
+                proof by induction hypothesis on a1, a2
             end case  
  end case analysis
  end case
