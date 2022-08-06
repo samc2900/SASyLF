@@ -326,7 +326,7 @@ inc q1 = q
 s n1 / s n2 = q
   
 
-s n + s m = n1  
+n1 + s m = s n  
 n1 / s m = q
 ----- rep-lt
 s m / s n = 0 + inv succ q 
@@ -363,7 +363,7 @@ lemma rep-implies-positive:
             proof by d5, d6
     end case
     case rule
-        d3': s n + s m' = n1'
+        d3': n1' + s m' = s n
         d4': n1' / s m'= q1'
         -------------------------- rep-lt
          _: s m' / s n = 0 + inv succ q1'
@@ -428,23 +428,40 @@ lemma rep-unique:
                   proof by contradiction on d1'
                 end case
                 case rule
-                  k: n4 + s n6 = n6
+                  pr1: n4 + s n6 = n6
                   ----------------- plus-s
                   p: s n4 + s n6 = s n6
                  where n3 := s n4 and n' := n6 
                 is
-                  proof by contradiction on d3'
+                
+                  proof by unproved
             end case
           end case analysis
           end case
           case rule
-            _:s n' + s n' = n1
-            _:n1 / s n' = q
+            pr1: n1 + s n' = s n'
+            pr2: n1 / s n' = q
             ----- rep-lt
-            _:s n' / s n' = 0 + inv succ q
+            c: s n' / s n' = 0 + inv succ q
            where q2 := 0 + inv succ q
           is
-            d9: q1 = q2 by rule eq
+            proof by case analysis on pr1:
+              case rule
+                -------------- plus-z
+                _: 0 + s n' = s n'
+                where n1 := 0
+              is
+                proof by contradiction on pr2
+              end case
+              case rule
+                pr3: n4 + s n6 = n6
+                 ----------------- plus-s
+                 _: s n4 + s n6 = s n6
+                 where n1 := s n4 and n' := n6
+               is
+                 proof by contradiction on c
+               end case
+            end case analysis
          end case
 	   end case analysis
    end case
@@ -476,7 +493,7 @@ lemma rep-unique:
             end case analysis
     end case
     case rule
-        d3': s n' + s m' = n1'
+        d3': n1' + s m' = s n'
         d4': n1' / s m' = q1'
         -------------------------- rep-lt
          d1'': s m' / s n' = 0 + inv succ q1'
@@ -484,19 +501,20 @@ lemma rep-unique:
        is
          proof by case analysis on d2:
            case rule
-                    d3'': s n' + s m' = n1''
+                    d3'': n1'' + s m' = s n'
                     d4'': n1'' / s m' = q1''
                     -------------------------- rep-lt
                     d2'': s m' / s n' = 0 + inv succ q1''
                     where q2 := 0 + inv succ q1''
                   is
-                    e1: n1' = n1'' by theorem Nat.plus-unique on d3', d3''
+                    p1: s m' + n1' = s n' by theorem Nat.plus-commutative on d3'
+                    p2: s m' + n1'' = s n' by theorem Nat.plus-commutative on d3''
+                    e1: n1' = n1'' by theorem Nat.plus-left-cancels on p1, p2
                 use inversion of Nat.eq on e1 where n1' := n1''
                 e2: q1' = q1'' by induction hypothesis on d4', d4''
                 use inversion of eq on e2 where q1' := q1''
-                a1: s m' / s n' = q2 by d2''
-                a2: s m' / s n' = q1 by d1''
-                proof by induction hypothesis on a1, a2
+                e3: q1 = q2 by rule eq
+                proof by e3
             end case  
  end case analysis
  end case
