@@ -433,8 +433,8 @@ lemma rep-unique:
                   p: s n4 + s n6 = s n6
                  where n3 := s n4 and n' := n6 
                 is
-                
-                  proof by unproved
+                  e4: n3 = 0 by lemma Nat.plus-left-identity on d'
+                  proof by contradiction on e4
             end case
           end case analysis
           end case
@@ -459,7 +459,11 @@ lemma rep-unique:
                  _: s n4 + s n6 = s n6
                  where n1 := s n4 and n' := n6
                is
-                 proof by contradiction on c
+                 p3: s n' + 0 = s n' by lemma Nat.plus-right-zero on (s n')
+                 p4: 0 + s n' = s n' by theorem Nat.plus-commutative on p3
+                 e4: n1 = 0 by theorem Nat.plus-right-cancels on pr1, p4
+                 //use inversion of Nat.eq on e4 where n1 := 0
+                 proof by contradiction on e4
                end case
             end case analysis
          end case
@@ -467,7 +471,7 @@ lemma rep-unique:
    end case
    case rule
 	    d': n3 + s n2' = s n1'
-	    d1': n3 / s n2' = q1'
+	    d1': n3 / s n2' = q1'  
 	    d2': inc q1' = q1''
 	    -------------- rep-gt
 	    _: s n1' / s n2' = q1''
@@ -490,7 +494,30 @@ lemma rep-unique:
                 use inversion of eq on e2 where q1' := q2'
                 proof by lemma inc-unique on d2', d2''
               end case
-            end case analysis
+              case rule
+                 ----- rep-eq
+                _:s n1' / s n1' = 1
+                where q2 := 1 and n2' := n1'
+              is
+                e1: n3 = 0 by lemma Nat.plus-left-identity on d'
+                use inversion of Nat.eq on e1 where n3 := 0
+                proof by contradiction on d1'
+              end case
+              case rule
+                pr1: n1'' + s m'' = s n''
+                pr2: n1'' / s m'' = q2'
+                -------------------------- rep-lt
+                _: s m'' / s n'' = 0 + inv succ q2'
+                where q2 := 0 + inv succ q2' and n2' := n'' and n1' := m''
+              is
+                p1: n1'' + n3 = n4 and
+                p2: n4 + s n'' = s n'' by theorem Nat.plus-associative-converse on d', pr1
+                e1: n4 = 0 by lemma Nat.plus-left-identity on p2
+                use inversion of Nat.eq on e1 where n4 := 0
+                use inversion of Nat.plus-z on p1 where n3 := 0 and n1'' := 0
+                proof by contradiction on pr2
+              end case
+             end case analysis
     end case
     case rule
         d3': n1' + s m' = s n'
@@ -515,7 +542,30 @@ lemma rep-unique:
                 use inversion of eq on e2 where q1' := q1''
                 e3: q1 = q2 by rule eq
                 proof by e3
-            end case  
+            end case
+            case rule
+                ------------ rep-eq
+                _: s n' / s n' = 1
+                where m' := n' and q2 := 1
+              is
+                e1: n1' = 0 by lemma Nat.plus-left-identity on d3'
+                use inversion of Nat.eq on e1 where n1' := 0
+                proof by contradiction on d4'
+              end case
+              case rule
+                pr1: n3' + s n' = s m'
+                pr2: n3' / s n' = q2'
+                pr3: inc q2' = q2
+                -------------- rep-gt
+                _:  s m' / s n' = q2
+              is
+                p1: n3' + n1' = n4 and
+                p2: n4 + s m' = s m' by theorem Nat.plus-associative-converse on d3', pr1
+                e1: n4 = 0 by lemma Nat.plus-left-identity on p2
+                use inversion of Nat.eq on e1 where n4 := 0
+                use inversion of Nat.plus-z on p1 where n3' := 0 and n1' := 0
+                proof by contradiction on pr2
+              end case
  end case analysis
  end case
  end induction
