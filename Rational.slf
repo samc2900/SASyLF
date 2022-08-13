@@ -81,13 +81,13 @@ judgment add: q + q = q
     <- rep P12+P21 N12 Q3.
 */
 
-q1 = m1 / n1
+q1 = m1 / n1    
 q2 = m2 / n2
 m1 * n2 = p12
 m2 * n1 = p21
 n1 * n2 = n12
-p12 + p21 = p12
-p / n12 = q3
+p12 + p21 = p1221
+p1221 / n12 = q3
 -------------- add
 q1 + q2 = q3
 
@@ -572,8 +572,72 @@ lemma rep-unique:
 end lemma
 
 
- 
-  
+theorem rep-times-right:
+  forall d1: m1 / n1 = q1
+  forall d2: m1 * s n2 = m12
+  forall d3: n1 * s n2 = n12
+  exists m12 / n12 = q1
+  proof by induction on d1:
+    case rule
+      ----------- rep-eq
+      _: (s m1') / (s m1') = 1
+      where m1 := s m1' and n1 := s m1' and q1 := 1
+    is
+      e1: m12 = s n3 by theorem Nat.times-preserves-positive on d2
+      use inversion on e1 where m12 := s n3
+      e2: m12 = n12 by theorem Nat.times-unique on d2, d3
+      use inversion on e2 where n12 := s n3
+      proof by rule rep-eq
+    end case
+    case rule
+      pr1: n0 + (s n1') = (s m1')
+      pr2: n0 / (s n1') = q0
+      pr3: inc q0 = q1
+      ----------- rep-gt
+      _: (s m1') / (s n1') = q1
+      where m1 := s m1' and n1 := s n1' 
+    is
+      e1: m12 = s n3 by theorem Nat.times-preserves-positive on d2
+      e2: n12 = s n4 by theorem Nat.times-preserves-positive on d3
+      use inversion on e1 where m12 := s n3
+      use inversion on e2 where n12 := s n4
+      t1: n0 * s n2 = n5 by theorem Nat.times-total on n0, (s n2)
+      t2: n0 * s n2 = n6 and
+      t3: s n1' * s n2 = n7 and
+      p1: n6 + n7 = s n3 by theorem Nat.times-right-distributes-over-plus on pr1, d2
+      d4: n5 / n7 = q0 by induction hypothesis on pr2, t1, t3
+      e3: n5 = n6 by theorem Nat.times-unique on t1, t2
+      e4: n12 = n7 by theorem Nat.times-unique on d3, t3
+      use inversion on e3 where n5 := n6
+      use inversion on e4 where n7 := n12
+      proof by rule rep-gt on p1, d4, pr3
+    end case
+    case rule
+      pr1: n0 + (s m1') = (s n1')
+      pr2: n0 / (s m1') = q0
+      ----------- rep-lt
+      _: (s m1') / (s n1') = (0 + inv succ q0)
+      where n1 := s n1' and m1 := s m1' and q1 := 0 + inv succ q0
+    is
+      e1: m12 = s n3 by theorem Nat.times-preserves-positive on d2
+      e2: n12 = s n4 by theorem Nat.times-preserves-positive on d3
+      use inversion on e1 where m12 := s n3
+      use inversion on e2 where n12 := s n4
+      t1: n0 * s n2 = n5 by theorem Nat.times-total on n0, (s n2)
+      t2: n0 * s n2 = n6 and
+      t3: s m1' * s n2 = n7 and
+      p1: n6 + n7 = s n4 by theorem Nat.times-right-distributes-over-plus on pr1, d3
+      d4: n5 / n7 = q0 by induction hypothesis on pr2, t1, t3
+      e3: n5 = n6 by theorem Nat.times-unique on t1, t2
+      e4: m12 = n7 by theorem Nat.times-unique on d2, t3
+      use inversion on e3 where n5 := n6
+      use inversion on e4 where n7 := m12
+      proof by rule rep-lt on p1, d4
+    end case
+
+    
+  end induction
+end theorem
 
 
 
