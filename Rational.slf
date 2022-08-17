@@ -87,7 +87,7 @@ m1 * n2 = p12
 m2 * n1 = p21
 n1 * n2 = n12
 p12 + p21 = p1221
-p1221 / n12 = q3
+/p1221 / n12 = q3
 -------------- add
 q1 + q2 = q3
 
@@ -634,11 +634,90 @@ theorem rep-times-right:
       use inversion on e4 where n7 := m12
       proof by rule rep-lt on p1, d4
     end case
-
-    
   end induction
 end theorem
 
 
+theorem rep-times-left:
+  forall d1: m1 / n1 = q1
+  forall d2: s m2 * m1 = m21
+  forall d3: s m2 * n1 = n21
+  exists m21 / n21 = q1
+  d2': m1 * s m2 = m21 by theorem Nat.times-commutative on d2
+  d3': n1 * s m2 = n21 by theorem Nat.times-commutative on d3
+  proof by theorem rep-times-right on d1, d2', d3'
+end theorem
+
+theorem rep-right-cancels:
+  forall d1: m1 / n1 = q1
+  forall d2: m2 * n2 = m1
+  forall d3: n3 * n2 = n1 
+  exists m2 / n3 = q1
+  do case analysis on n2:
+    case 0 is
+      t1: m2 * 0 = 0 by lemma Nat.times-right-zero on m2
+      e1: m1 = 0 by theorem Nat.times-unique on d2, t1
+      use inversion on e1 where m1 := 0
+      proof by unproved
+      end case 
+  end case analysis
+  proof by induction on d1:
+    case rule
+      ----------- rep-eq
+      _: (s m1') / (s m1') = 1
+      where m1 := s m1' and n1 := s m1' and q1 := 1
+    is
+      e1: m2 = n3 by theorem Nat.times-right-cancels on d2, d3
+      proof by unproved
+    end case
+
+    case rule
+      _: p0 + (s p1) = (s p2)
+      _: p0 / (s p1) = r0
+      _: inc r0 = q1
+      ----------- rep-gt
+      _: (s p2) / (s p1) = q1
+    is
+      proof by unproved
+    end case
+
+    case rule
+      _: p0 + (s p1) = (s p2)
+      _: p0 / (s p1) = r0
+      ----------- rep-lt
+      _: (s p1) / (s p2) = (0 + inv succ r0)
+    is
+      proof by unproved
+    end case
+
+  end induction
+end theorem
+
+theorem rep-total:
+  forall m
+  forall n
+  forall cmp: s n > s m or s m = s n or s m > s n
+  exists s m / s n = q .
+  proof by induction on cmp:
+    case or gt1: (s n) > (s m) is
+      p1: s n' + s m = s n by theorem Nat.gt-implies-plus on gt1
+      p2: s m + s n' = s n by theorem Nat.plus-commutative on p1
+      gt2: s n > s n' by theorem  Nat.plus-succ-left-implies-lt on p2
+      gt3: n > n' by lemma Nat.succ-preserves-gt-converse on gt2
+      cmp2: s m > s n' or s n' = s m or s n' > s m by theorem Nat.cmp-total on (s n'), (s m)
+      rep1: s n' /  s m = q1 by induction hypothesis on n', m, cmp2 
+      proof by unproved
+    end case
+
+    case or e1: (s m) = (s n) is
+      use inversion on e1 where m := n
+      proof by rule rep-eq
+    end case
+
+    case or _: (s m) > (s n) is
+      proof by unproved
+    end case
 
 
+end induction
+end theorem
